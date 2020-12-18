@@ -6,8 +6,9 @@ class Compiler
     protected $view;
 
     protected $rules = array(
-        '#\{\$([a-zA-Z_].+?)\}#' => ['\Sframe\View\BasicParser', 'var'],
-        '#\{include\s+(.+?)\}#' => ['\Sframe\View\BasicParser', 'include'],
+        '#\{\$([a-zA-Z_].+?)\}#' => 'var',
+        '#\{include\s+(.+?)\}#' => 'include',
+        '#\{content\s+(.+?)\}#' => 'content',
     );
 
     public function __construct(View $view)
@@ -41,14 +42,13 @@ class Compiler
     }
 
     /**
-     * @param array $handler
+     * @param string $handler
      * @param array $matches
      * @return string
      */
     protected function handle($handler, $matches)
     {
-        $class = $handler[0];
-        $method = 'parse'.ucfirst($handler[1]);
+        $method = 'parse'.ucfirst($handler);
         return $this->$method($matches);
     }
 
@@ -65,8 +65,19 @@ class Compiler
      * #\{include\s+(.+?)\}#
      * e.g. {include part/head.php}
      */
-    public function parseInclude($matches)
+    protected function parseInclude($matches)
     {
         return $this->parse($matches[1]);
+    }
+
+    /**
+     * #\{content\s+(.+?)\}#
+     * e.g. {content part/head.php}
+     */
+    protected function parseContent($matches)
+    {
+        ob_start();
+        include $this->view->path . $matches[1];
+        return ob_get_clean();
     }
 }

@@ -50,3 +50,7 @@ index.php
 </html>
 ```
 
+# Labels
+* {$var}
+* {include template}
+* {content template}
