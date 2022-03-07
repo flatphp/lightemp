@@ -4,12 +4,14 @@
 class View
 {
     public $path;
+    public $path_cache;
     public $cache = true;
     public $vars = [];
 
     public function __construct($path, array $conf = [])
     {
         $this->path = rtrim($path,'/') . '/';
+        $this->path_cache = $this->path .'_cache/';
         if (isset($conf['cache'])) {
             $this->cache = (bool)$conf['cache'];
         }
@@ -39,11 +41,16 @@ class View
 
     public function getCachePath()
     {
-        return $this->path . '_cache/';
+        return $this->path_cache;
     }
 
     public function getVar($key, $default = null)
     {
         return isset($this->vars[$key]) ? $this->vars[$key] : $default;
+    }
+
+    public function setCachePath($path_cache)
+    {
+        $this->path_cache = $path_cache;
     }
 }
